@@ -10,6 +10,7 @@ class Config:
     n_heads = 8
     n_layers = 6
     ffn_dim = 2048
+    seq_len = 32
     dropout = 0.1
 
     # Training parameters
@@ -18,7 +19,7 @@ class Config:
     learning_rate = 3e-4
 
     # File paths
-    DATA_PATH = "data/sample/corpus.txt" 
+    DATA_PATH = "data/samples/corpus.txt" 
     MODEL_PATH = "checkpoints/model.pt"
     VOCAB_PATH = "data/vocab.txt"
 
