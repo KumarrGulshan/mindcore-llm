@@ -30,7 +30,7 @@ class Trainer:
             batch_size=Config.batch_size,
         )
 
-        # Model
+        # Initialize Transformer
         self.model = Transformer(
             vocab_size=vocab_size,
             embed_dim=Config.embed_dim,
@@ -41,7 +41,7 @@ class Trainer:
             max_len=Config.max_seq_len,
         ).to(self.device)
 
-        # Loss & Optimizer
+        # Loss & optimizer
         self.loss_fn = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=Config.learning_rate)
 
@@ -73,16 +73,22 @@ class Trainer:
             total_loss = 0
             for batch, (x, y) in enumerate(tqdm(self.dataloader)):
 
-                x = x.to(self.device)
-                y = y.to(self.device)
+                x = x.to(self.device)  # Encoder input
+                y = y.to(self.device)  # True target
+
+                # Prepare decoder input (shifted right with BOS token)
+                bos_id = self.tokenizer.vocab.get("<bos>", 0)
+                decoder_input = torch.zeros_like(y)
+                decoder_input[:, 1:] = y[:, :-1]
+                decoder_input[:, 0] = bos_id
 
                 # Forward pass
-                logits = self.model(x, x)  # For now using src=x, tgt=x as dummy
+                logits = self.model(x, decoder_input)  # src=x, tgt=decoder_input
                 logits = logits.view(-1, logits.size(-1))
-                y = y.view(-1)
+                y_flat = y.view(-1)
 
-                # Loss
-                loss = self.loss_fn(logits, y)
+                # Compute loss
+                loss = self.loss_fn(logits, y_flat)
 
                 # Backprop
                 self.optimizer.zero_grad()
@@ -98,8 +104,9 @@ class Trainer:
             print(f"🔥 Epoch {epoch+1} Avg Loss: {avg_loss:.4f}")
 
             # Save checkpoint
-            torch.save(self.model.state_dict(), f"{Config.MODEL_PATH}_epoch{epoch+1}.pt")
-            print(f"💾 Saved model checkpoint: {Config.MODEL_PATH}_epoch{epoch+1}.pt")
+            checkpoint_path = f"{Config.MODEL_PATH}_epoch{epoch+1}.pt"
+            torch.save(self.model.state_dict(), checkpoint_path)
+            print(f"💾 Saved model checkpoint: {checkpoint_path}")
 
 
 if __name__ == "__main__":
