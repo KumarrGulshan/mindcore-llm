@@ -4,7 +4,7 @@ import torch
 
 class Config:
     # Model architecture
-    vocab_size = 23641
+    vocab_size = 8000
     max_seq_len = 128
     embed_dim = 512
     n_heads = 8
@@ -22,6 +22,10 @@ class Config:
     DATA_PATH = "data/samples/corpus.txt" 
     MODEL_PATH = "checkpoints/model.pt"
     VOCAB_PATH = "data/vocab.txt"
+
+    # BPE tokenizer paths
+    TOKENIZER_PATH = "data/vocab.json"
+    MERGES_PATH = "data/merges.txt"
 
     # Device setup
     device = "cuda" if torch.cuda.is_available() else "cpu"
