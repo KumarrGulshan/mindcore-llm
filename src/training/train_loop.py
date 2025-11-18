@@ -1,3 +1,5 @@
+# src/training/train_loop.py
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -6,7 +8,6 @@ from tqdm import tqdm
 from src.data.dataset import create_dataloaders_from_corpus
 from src.model.transformer_model import Transformer
 from src.config.model_config import Config
-
 
 class Trainer:
     def __init__(self):
@@ -22,7 +23,7 @@ class Trainer:
 
         print("🚀 Initializing model...")
         self.model = Transformer(
-            vocab_size=len(self.tokenizer.vocab),
+            vocab_size=len(self.tokenizer.vocab),  # use tokenizer vocab size
             embed_dim=Config.embed_dim,
             num_heads=Config.n_heads,
             ff_dim=Config.ffn_dim,
@@ -33,13 +34,11 @@ class Trainer:
 
         self.optimizer = optim.Adam(self.model.parameters(), lr=Config.learning_rate)
         self.criterion = nn.CrossEntropyLoss()
-
         self.device = Config.device
         print(f"Trainer initialized. Using device: {self.device}\n")
 
     def train(self):
         print("🏋️ Starting training...")
-
         for epoch in range(Config.num_epochs):
             print(f"\n📅 Epoch {epoch+1}/{Config.num_epochs}")
             self.model.train()
@@ -48,7 +47,7 @@ class Trainer:
             for batch_idx, (x, y) in enumerate(tqdm(self.train_loader)):
                 x, y = x.to(self.device), y.to(self.device)
 
-                # Decoder input: shift target by one with <bos> token
+                # Prepare decoder input: shift target by one with <bos> token
                 bos_id = self.tokenizer.vocab.get("<bos>", 0)
                 decoder_input = torch.zeros_like(y)
                 decoder_input[:, 1:] = y[:, :-1]
