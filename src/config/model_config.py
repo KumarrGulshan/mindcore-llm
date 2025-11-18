@@ -21,7 +21,7 @@ class Config:
     # File paths
     DATA_PATH = "data/samples/corpus.txt" 
     MODEL_PATH = "checkpoints/model.pt"
-    VOCAB_PATH = "data/vocab.txt"
+    # VOCAB_PATH = "data/vocab.txt"
 
     # BPE tokenizer paths
     TOKENIZER_PATH = "data/vocab.json"

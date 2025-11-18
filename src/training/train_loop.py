@@ -15,7 +15,7 @@ class Trainer:
         # Load tokenizer + dataloaders
         self.tokenizer, self.train_loader, self.val_loader = create_dataloaders_from_corpus(
             corpus_path=Config.DATA_PATH,
-            vocab_path=Config.VOCAB_PATH,
+            vocab_path=Config.TOKENIZER_PATH,
             seq_len=Config.seq_len,
             batch_size=Config.batch_size,
             val_split=0.05,
@@ -23,7 +23,7 @@ class Trainer:
 
         print("🚀 Initializing model...")
         self.model = Transformer(
-            vocab_size=len(self.tokenizer.vocab),  # use tokenizer vocab size
+            vocab_size = self.tokenizer.tokenizer.get_vocab_size(),  # use tokenizer vocab size
             embed_dim=Config.embed_dim,
             num_heads=Config.n_heads,
             ff_dim=Config.ffn_dim,
@@ -48,7 +48,10 @@ class Trainer:
                 x, y = x.to(self.device), y.to(self.device)
 
                 # Prepare decoder input: shift target by one with <bos> token
-                bos_id = self.tokenizer.vocab.get("<bos>", 0)
+                bos_id = self.tokenizer.tokenizer.token_to_id("<bos>")
+                if bos_id is None:
+                 bos_id = 0
+
                 decoder_input = torch.zeros_like(y)
                 decoder_input[:, 1:] = y[:, :-1]
                 decoder_input[:, 0] = bos_id
