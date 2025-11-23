@@ -9,4 +9,5 @@ checkpoints/
 *.ckpt
 __pycache__/
 *.pyc
-data/samples/corpus/
+data/
+notebooks/.ipynb_checkpoints/
