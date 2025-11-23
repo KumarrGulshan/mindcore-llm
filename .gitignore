@@ -1,4 +1,8 @@
 .venv/
+
+# Model checkpoints (YOUR REQUEST)
+models/
+models/checkpoints/
 checkpoints/
 *.pt
 *.pth
