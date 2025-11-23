@@ -1,6 +1,5 @@
 .venv/
 
-# Model checkpoints (YOUR REQUEST)
 models/
 models/checkpoints/
 checkpoints/
@@ -10,3 +9,4 @@ checkpoints/
 *.ckpt
 __pycache__/
 *.pyc
+data/samples/corpus/

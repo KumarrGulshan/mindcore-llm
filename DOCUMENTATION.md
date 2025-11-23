@@ -76,7 +76,7 @@ All critical hyperparameters and file paths are managed in [`src/config/model_co
 | `num_epochs` | 10 | Total number of training epochs. |
 | `learning_rate` | 3e-4 | Learning rate for the optimizer. |
 | `DATA_PATH` | "data/sample/corpus.txt" | Path to the training data file. |
-| `MODEL_PATH` | "checkpoints/model.pt" | Path where the trained model checkpoint is saved. |
+| `MODEL_PATH` | "models/checkpoint/model.pt" | Path where the trained model checkpoint is saved. |
 | `VOCAB_PATH` | "data/vocab.txt" | Path to the generated vocabulary file. |
 | `device` | "cuda" or "cpu" | Device used for computation (automatically detects CUDA if available). |
 
@@ -115,8 +115,10 @@ The project includes a simple API built with FastAPI to serve the trained model 
 The required Python packages are listed in [`requirements.txt`](requirements.txt):
 
 ```
-torch==2.9.0+cpu
-numpy
-tqdm
-fastapi
-uvicorn[standard]
+torch>=2.0.0
+numpy>=1.20.0
+tqdm>=4.60.0
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+pandas>=1.4.0
+scikit-learn>=1.0.0
