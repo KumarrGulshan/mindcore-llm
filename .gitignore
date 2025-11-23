@@ -8,3 +8,5 @@ checkpoints/
 *.pth
 *.bin
 *.ckpt
+__pycache__/
+*.pyc
