@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
+import os  # ➤ ADDED
 
 from src.data.dataset import create_dataloaders_from_corpus
 from src.model.transformer_model import Transformer
@@ -10,6 +11,7 @@ from src.config.model_config import Config
 class Trainer:
     def __init__(self):
         print("📦 Loading dataset...")
+        
         # Load tokenizer + dataloaders
         self.tokenizer, self.train_loader, self.val_loader = create_dataloaders_from_corpus(
             corpus_path=Config.DATA_PATH,
@@ -21,7 +23,7 @@ class Trainer:
 
         print("🚀 Initializing model...")
         self.model = Transformer(
-            vocab_size = self.tokenizer.tokenizer.get_vocab_size(),
+            vocab_size=self.tokenizer.tokenizer.get_vocab_size(),
             embed_dim=Config.embed_dim,
             num_heads=Config.n_heads,
             ff_dim=Config.ffn_dim,
@@ -33,11 +35,44 @@ class Trainer:
         self.optimizer = optim.Adam(self.model.parameters(), lr=Config.learning_rate)
         self.criterion = nn.CrossEntropyLoss()
         self.device = Config.device
+
         print(f"Trainer initialized. Using device: {self.device}\n")
+
+        # ➤ ADDED — Auto-resume
+        self.start_epoch = 0
+        self._load_latest_checkpoint()
+
+    # ➤ ADDED FUNCTION: Automatically loads last checkpoint
+    def _load_latest_checkpoint(self):
+        checkpoint_dir = "models/checkpoints"
+        if not os.path.exists(checkpoint_dir):
+            print("📁 No checkpoint directory found. Starting fresh.")
+            return
+
+        # find latest checkpoint file
+        checkpoints = [f for f in os.listdir(checkpoint_dir) if f.endswith(".pt")]
+        if not checkpoints:
+            print("📁 No checkpoints found. Starting fresh.")
+            return
+
+        # Sort by epoch number
+        checkpoints.sort(key=lambda x: int(x.split("_epoch")[1].split(".")[0]))
+
+        latest = checkpoints[-1]
+        checkpoint_path = os.path.join(checkpoint_dir, latest)
+
+        print(f"🔄 Loading latest checkpoint: {checkpoint_path}")
+
+        self.model.load_state_dict(torch.load(checkpoint_path, map_location=self.device))
+
+        # Extract epoch
+        self.start_epoch = int(latest.split("_epoch")[1].split(".")[0])
+        print(f"🔁 Resuming from epoch {self.start_epoch}")
 
     def train(self):
         print("🏋️ Starting training...")
-        for epoch in range(Config.num_epochs):
+
+        for epoch in range(self.start_epoch, Config.num_epochs):  # ➤ MODIFIED
             print(f"\n📅 Epoch {epoch+1}/{Config.num_epochs}")
             self.model.train()
             total_loss = 0
@@ -56,16 +91,13 @@ class Trainer:
                 decoder_input[:, 0] = bos_id
                 decoder_input = decoder_input.to(self.device)
 
-                # Forward pass
                 logits = self.model(x, decoder_input)
                 logits = logits.view(-1, logits.size(-1))
                 y_flat = y.view(-1)
 
-                # Compute loss
                 loss = self.criterion(logits, y_flat)
                 total_loss += loss.item()
 
-                # Backprop
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
@@ -81,7 +113,7 @@ class Trainer:
             print(f"💻 Validation Loss: {val_loss:.4f} | Perplexity: {torch.exp(torch.tensor(val_loss)):.2f}")
 
             # Save checkpoint
-            checkpoint_path = f"{Config.MODEL_PATH}_epoch{epoch+1}.pt"
+            checkpoint_path = f"models/checkpoints/model.pt_epoch{epoch+1}.pt"
             torch.save(self.model.state_dict(), checkpoint_path)
             print(f"💾 Saved checkpoint: {checkpoint_path}")
 
@@ -109,10 +141,9 @@ class Trainer:
                 loss = self.criterion(logits, y_flat)
                 total_loss += loss.item()
 
-        avg_loss = total_loss / len(self.val_loader)
-        return avg_loss
+        return total_loss / len(self.val_loader)
 
 
-if __name__ == "__main__":
+if __name__== "__main__":
     trainer = Trainer()
     trainer.train()

@@ -15,7 +15,7 @@ class Config:
 
     # Training parameters
     batch_size = 32
-    num_epochs = 10
+    num_epochs = 40
     learning_rate = 3e-4
 
     # File paths

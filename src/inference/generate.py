@@ -78,8 +78,8 @@ class Generator:
 
 
 if __name__ == "__main__":
-    generator = Generator("models/checkpoints/model.pt_epoch7.pt")
-    prompt = "Hello, how are you?"
+    generator = Generator("models/checkpoints/model.pt_epoch6.pt")
+    prompt = "The sun rises ?"
     output = generator.generate(prompt, max_tokens=50, temperature=0.8, top_k=50, top_p=0.9)
     print(f"\n📝 Prompt: {prompt}")
     print(f"🤖 Generated: {output}")

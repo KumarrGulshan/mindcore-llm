@@ -16,9 +16,11 @@ For comprehensive documentation on the architecture, configuration, and detailed
     The project uses a virtual environment and requires PyTorch.
 
     ```bash
-    ./scripts/setup_env.sh
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
     ```
-    *Note: This script creates a `.venv` and installs dependencies from `requirements.txt`.*
+    *Note: This sets up a virtual environment and installs dependencies from `requirements.txt`.*
 
 3.  **Activate the environment:**
     ```bash
