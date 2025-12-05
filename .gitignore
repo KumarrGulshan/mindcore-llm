@@ -1,12 +1,22 @@
 .venv
 
-# Model checkpoints (YOUR REQUEST)
-models
+models/
 models/checkpoints/
 checkpoints/
 *.pt
 *.pth
 *.bin
 *.ckpt
-__pycache__
+__pycache__/
 *.pyc
+data/
+notebooks/.ipynb_checkpoints/
+
+
+# git init
+# git add README.md
+# git commit -m "first commit"
+# git branch -M main
+# git remote add origin https://github.com/KumarrGulshan/MindcoreS-llm.git
+# git push -u origin main
+
