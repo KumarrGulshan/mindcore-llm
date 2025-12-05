@@ -1,12 +1,12 @@
-.venv/
+.venv
 
 # Model checkpoints (YOUR REQUEST)
-models/
+models
 models/checkpoints/
 checkpoints/
 *.pt
 *.pth
 *.bin
 *.ckpt
-__pycache__/
+__pycache__
 *.pyc
